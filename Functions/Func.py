@@ -65,7 +65,7 @@ def Get_Season_Episode(File_Path):
 
 
 # Extract TV Show Or Movie Name
-def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx):
+def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
     try:
         # Try To Get The TV Show Or Movie Name
         if (FType == "TV"):
@@ -74,7 +74,7 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx):
         elif (FType == "Movie"):
             # Build The Delimiter To Check
             Deli = MPfx.upper() + "|" + MPfx.lower() + "|" + \
-                SPfx.upper() + "|" + SPfx.lower()
+                SPfx.upper() + "|" + SPfx.lower() + "|" + SLang.lower() + "|" + SLang.upper()
             TVMovie_Name = re.split(Deli, re.split(r'/', File_Path)[-1])[0]
         else:
             TVMovie_Name = "No_Name"
@@ -149,7 +149,7 @@ def Rename_TV_Movie(Org_File, New_Name, MPfx):
 
 
 # Check If Path Has More Then One TV Show And / Or Movie
-def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx):
+def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx, SLang):
     try:
         Count = 0  # Set blank counter
         # Detect If Movie
@@ -158,7 +158,7 @@ def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx):
         else:  # Set To TV
             MoT = "TV"
         # Get The First TV Show Or Movie Name
-        FName = Get_TV_Movie_Name(Files_In_Dir[0], MoT, MPfx, SPfx)
+        FName = Get_TV_Movie_Name(Files_In_Dir[0], MoT, MPfx, SPfx, SLang)
         for f in Files_In_Dir:
             # Detect If Movie
             if (Get_Season_Episode(f)[0] == "Empty"):
@@ -166,7 +166,7 @@ def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx):
             else:  # Set To TV
                 MoT = "TV"
             # Get The First TV Show Or Movie Name
-            F_Name = Get_TV_Movie_Name(f, MoT, MPfx, SPfx)
+            F_Name = Get_TV_Movie_Name(f, MoT, MPfx, SPfx, SLang)
             # Check If Not Identical To First Name And Increment The Counter
             if (F_Name != FName):
                 Count += 1

@@ -122,11 +122,13 @@ def Build_New_Name(File_Path, Season, Episode, ToM, NName, SeasPFX, SLang, MPfx,
 
 
 # Validate New TV Or Movie Name
-def Val_New_Name(New_Name, Old_Name):
+def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
     try:
         # Check if user supplied a new name, if yes, return it.
-        if (New_Name != None):
-            return New_Name
+        if (New_Name_List != ""):
+            return New_Name_List
+        elif (New_Name_User != None):
+            return New_Name_User
         else:  # Else return the extracted name
             return Old_Name
     except:
@@ -173,4 +175,30 @@ def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx):
         else:
             return True
     except:
+        return False
+
+
+# Load And Select A List
+def Get_List(List_Path):
+    try:
+        if (os.path.isfile(List_Path)):  # Make sure the file exists
+            with open(List_Path) as Lines:  # Read the file
+                # read the contets of the file and split into lines
+                Show_List_Unsplit = Lines.read().splitlines()
+            Show_List = []  # Set a blank array for the show list
+            index = 1  # Number the lines, start with 1
+            MessegeToShow = ""
+            for L in Show_List_Unsplit:  # Loop threw the lines and split them to show name and conatining folder
+                Show_List.append(re.split(r' : ', L))
+                MessegeToShow = MessegeToShow + "\n" + str(index) + ") " + "Show name: " + re.split(r' : ', L)[
+                    0] + ", location: " + re.split(r' : ', L)[1]  # Build the Meesege for the user to select a show
+                index += 1
+            # Add the question for the user to the messege
+            MessegeToShow = MessegeToShow + "\n\nPlease Select a TV show number: "
+            # Request a selection from the user.
+            inp = input(MessegeToShow)
+            # Return the TV show data array
+            return Show_List[int(inp) - 1]
+    except:
+        print("Failed to load the list")
         return False

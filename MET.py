@@ -34,19 +34,17 @@ parser.add_argument('-N', '-n', '--NewSName',
 #                    help="Organize the show - add a sub dir for Season (with number) and move the files inside, then rename based on the formating. make sure there are no subfolders inside!!")
 parser.add_argument('-R', '-r', '--ReName', action='store_true',
                     help="Rename the TV show or Movie files.")
-# parser.add_argument('-S', '-s', '--SeasonRename', action='store_true',
-#                    help="Rename the season folder\s.")
 # parser.add_argument('-M', '-m', '--Move',
 #                    help="Move the TV Show Episodes to the path provided.", nargs='?', default="Empty")
-# parser.add_argument('-L', '-l', '--LoadList',
-#                    help="Load external TV show list and select the correct one.")
+parser.add_argument('-L', '-l', '--LoadList',
+                    help="Load external TV show list and select the correct one.")
 args = parser.parse_args()
 
 ###############################
 # Global Variables Defenition #
 ###############################
 
-Ver = "0.1.0-1"     # Release number
+Ver = "0.2.0-0"     # Release number
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -80,9 +78,27 @@ def main():
             # Get the file list
             Files_In_Dir = Get_Files_In_Show_Folder(
                 src, File_Sufix_Movies, File_Sufix_Subtitles)
+            # Meesege the user
+            print("Loaded all media and subtitle files to the program!")
             # Check If Path Contains Only On TV Show Or One Movie
             OneSM = Val_One_TV_Movie(
                 Files_In_Dir, File_Sufix_Movies, File_Sufix_Subtitles)
+            # Meesege the user
+            if (OneSM):
+                print("Only one TV Show or Movie Found!")
+            # Check If External List Loaded and Use It (Make Sure Only  One TV Show Or Movie Present)
+            if (args.LoadList != None and OneSM):
+                # Get The Show list and selext one
+                Selected_Show = Get_List(args.LoadList)
+                # Overwrite the manual user input for the TV Show name
+                NewName = Selected_Show[0]
+                # Save the location to move the show at the end
+                dst = Selected_Show[1]
+                # Meesege the user
+                print(
+                    "External media list loaded, Media name Selected:", NewName)
+            else:  # Make Sure NewName Is Not Set If Not Needed
+                NewName = ""
             # Run threw each file
             for f in Files_In_Dir:
                 # Get Season and Episde(s) for the file
@@ -92,7 +108,7 @@ def main():
                     TVMName = Get_TV_Movie_Name(
                         f, "Movie", File_Sufix_Movies, File_Sufix_Subtitles)  # Get TV Or Movie Name
                     # If user supplied new name for the show or movie, Use it.
-                    NewName = Val_New_Name(args.NewSName, TVMName)
+                    NewName = Val_New_Name(args.NewSName, TVMName, NewName)
                     # Get The Correct New Name And Path
                     ANew_Name, New_Path = Build_New_Name(f, "", "", "Movie", NewName,
                                                          "", Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
@@ -100,13 +116,16 @@ def main():
                     TVMName = Get_TV_Movie_Name(
                         f, "TV", File_Sufix_Movies, File_Sufix_Subtitles)  # Get TV Or Movie Name
                     # If user supplied new name for the show or movie, Use it.
-                    NewName = Val_New_Name(args.NewSName, TVMName)
+                    NewName = Val_New_Name(args.NewSName, TVMName, NewName)
                     # Get The Correct New Name And Path
                     ANew_Name, New_Path = Build_New_Name(f, Seas, Epi, "TV", NewName,
                                                          Season_Folder_Prefix, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
                 if (args.ReName and OneSM):  # Rename If User Asked To
                     Rename_TV_Movie(f, ANew_Name, File_Sufix_Movies)
-                #print(NewName, " -> ", ANew_Name, " -> ", New_Path)
+            # Meesege the user
+            if (args.ReName and OneSM):
+                print("Media Renamed!")
+                #print(TVMName, " -> ", NewName)
         else:
             # Error on path not valid
             print("Not A Valid Folder, quiting!!!")

@@ -3,7 +3,7 @@
 ##########################################################
 ##########################################################
 ## Writen By: Shay Pasvolsky | Apr 21st, 2023           ##
-## Last Update: Apr 21st, 2023                          ##
+## Last Update: Apr 22st, 2023                          ##
 ## Email: spasvolski@gmail.com                          ##
 ## GitHub: https://github.com/shipser                   ##
 ## Gitlab: @shipser                                     ##
@@ -137,7 +137,6 @@ def Val_New_Name(New_Name, Old_Name):
 # Move To New Location
 def Rename_TV_Movie(Org_File, New_Name, MPfx):
     try:
-        # if (Val_One_TV_Movie(Org_File, MPfx))
         # Build The New File Path
         New_Path = os.path.dirname(Org_File) + "/" + New_Name
         # Rename The File

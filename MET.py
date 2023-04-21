@@ -3,7 +3,7 @@
 ##########################################################
 ##########################################################
 ## Writen By: Shay Pasvolsky | Apr 21st, 2023           ##
-## Last Update: Apr 21st, 2023                          ##
+## Last Update: Apr 22st, 2023                          ##
 ## Email: spasvolski@gmail.com                          ##
 ## GitHub: https://github.com/shipser                   ##
 ## Gitlab: @shipser                                     ##
@@ -46,7 +46,7 @@ args = parser.parse_args()
 # Global Variables Defenition #
 ###############################
 
-Ver = "0.1.0-0"     # Release number
+Ver = "0.1.0-1"     # Release number
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie

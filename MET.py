@@ -38,6 +38,8 @@ parser.add_argument('-L', '-l', '--LoadList',
                     help="Load external TV show list and select the correct one.")
 parser.add_argument('-V', '-v', '--Version', action='store_true',
                     help="Show the version number.")
+parser.add_argument('-C', '-c', '--CleanUp', action='store_true',
+                    help="Remove source folder after moveing the media files, will only work if not other files or folders left inside.")
 # parser.add_argument('-O', '-o', '--Organaize', action='store_true',
 #                    help="Organize the show - add a sub dir for Season (with number) and move the files inside, then rename based on the formating. make sure there are no subfolders inside!!")
 args = parser.parse_args()
@@ -47,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.2.1"
+Ver = "0.3.0"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -142,16 +144,27 @@ def main():
                     # If dst set by external list use it, else if the user supplied new destination use it insted, if no new location don't move
                     if (dst != src):
                         Move_Media(New_Path, dst, MoT,
-                                   Season_Folder_Prefix, Seas, src)
+                                   Season_Folder_Prefix, Seas)
                     elif (args.Move != "Empty" and dst == src and args.Move != src):
                         Move_Media(New_Path, args.Move, MoT,
-                                   Season_Folder_Prefix, Seas, src)
+                                   Season_Folder_Prefix, Seas)
             # Meesege the user about renaming
             if (args.ReName and OneSM and not args.Move):
                 print("Media Renamed!")
             # Meesege the user about renaming and moveing
             if (args.Move and OneSM):
                 print("Media Renamed and Moved!")
+                # Check if user requested to delete source folder and set the flag to true
+                if (args.CleanUp):
+                    rmsrc = True
+                else:  # If user did not rewuest to delete source folder, set the flage to false
+                    rmsrc = False
+                # Remove Empty Folders and tell the user it is done
+                if (CleanUp_SRC(src, rmsrc)):
+                    if (rmsrc):
+                        print("Removed '{}' folder.".format(src))
+                    else:
+                        print("Removed empty folders inside '{}'".format(src))
         else:
             # Error on path not valid
             print("Not A Valid Folder, quiting!!!")

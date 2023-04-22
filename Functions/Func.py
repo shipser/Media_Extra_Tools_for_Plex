@@ -205,7 +205,7 @@ def Get_List(List_Path):
 
 
 # Move Files Into Correct Location
-def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum, BaseFolder):
+def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum):
     try:
         # Check if the Source Exists, if not, exit
         if (not os.path.isfile(File_To_Move)):
@@ -232,7 +232,39 @@ def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum, BaseFolder):
         else:  # Abort if alredy exists, and notify the user.
             print("File '{}' Already Exists in the new location, File move aborted!".format(
                 re.split(r'/', File_To_Move)[-1]))
-        # Clean Up Emty Folder(s) up to the base (excluding)
         return True
     except:
         return False
+
+
+# Remove Empty Folders
+def CleanUp_SRC(src, rmsrc=False):
+    try:
+        # Check Every Folder If Empty And Remove IT
+        Files_In_Dir = [os.path.join(root, name) for root, dirs, files in os.walk(
+            src) for name in files if name.lower()]  # Scan for files in the directory and subdirectorie(s)
+        for f in Files_In_Dir:  # Itirate threw files
+            # Check if it is a hidden file (starts with a .)
+            if (re.split(r'/', f.lower())[-1].startswith(".")):
+                os.remove(f)  # Remove the hidden file
+                # remove the entery from the list to continue
+                Files_In_Dir.remove(f)
+        if (not len(Files_In_Dir)):  # Check if no files left in the list
+            Dirs_In_Dir = [os.path.join(root, name) for root, dirs, files in os.walk(
+                src) for name in dirs if name.lower()]  # Build a list of all subdirectories
+            for d in Dirs_In_Dir:  # Itirate threw the sub directories
+                if (Is_Dir_Empty(d)):  # Check if the subdirectory is empty
+                    os.rmdir(d)  # Remove the subdirectory
+                    # Remove the subdirectory Entry from the list
+                    Dirs_In_Dir.remove(d)
+            if (not len(Dirs_In_Dir) and rmsrc and Is_Dir_Empty(src)):
+                os.rmdir(src)
+        return True
+    except:
+        return False
+
+
+# Check If Dir Is Empty
+def Is_Dir_Empty(src):
+    with os.scandir(src) as scan:
+        return next(scan, None) is None

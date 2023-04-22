@@ -42,7 +42,7 @@ args = parser.parse_args()
 # Global Variables Defenition #
 ###############################
 
-Ver = "0.2.0-1"     # Release number
+Ver = "0.2.0-2"     # Release number
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -108,18 +108,18 @@ def main():
                     # If user supplied new name for the show or movie, Use it.
                     NewName = Val_New_Name(args.NewSName, TVMName, NewName)
                     # Get The Correct New Name And Path
-                    ANew_Name, New_Path = Build_New_Name(f, "", "", "Movie", NewName,
-                                                         "", Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
+                    ANew_Name, New_Path = Build_New_Name(
+                        f, "", "", "Movie", NewName, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
                 else:  # TV Show
                     TVMName = Get_TV_Movie_Name(
                         f, "TV", File_Sufix_Movies, File_Sufix_Subtitles, Lang_File_Sufix)  # Get TV Or Movie Name
                     # If user supplied new name for the show or movie, Use it.
                     NewName = Val_New_Name(args.NewSName, TVMName, NewName)
                     # Get The Correct New Name And Path
-                    ANew_Name, New_Path = Build_New_Name(f, Seas, Epi, "TV", NewName,
-                                                         Season_Folder_Prefix, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
+                    ANew_Name, New_Path = Build_New_Name(
+                        f, Seas, Epi, "TV", NewName, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
                 if (args.ReName and OneSM):  # Rename If User Asked To
-                    Rename_TV_Movie(f, ANew_Name, File_Sufix_Movies)
+                    Rename_TV_Movie(f, ANew_Name, TVMName, False)
                 # Move To Correct Location
                 if (args.Move != "Empty" and OneSM):
                     print("Move")

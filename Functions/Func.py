@@ -86,7 +86,7 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
 
 
 # Build New Path To Arrange The File
-def Build_New_Name(File_Path, Season, Episode, ToM, NName, SeasPFX, SLang, MPfx, SPfx):
+def Build_New_Name(File_Path, Season, Episode, ToM, NName, SLang, MPfx, SPfx):
     try:
         New_Path = os.path.dirname(File_Path) + "/"
         # Check if TV Or Movie Title
@@ -137,7 +137,7 @@ def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
 
 
 # Move To New Location
-def Rename_TV_Movie(Org_File, New_Name, MPfx):
+def Rename_TV_Movie(Org_File, New_Name, Org_Show_Name, Re_Name_Folder):
     try:
         # Build The New File Path
         New_Path = os.path.dirname(Org_File) + "/" + New_Name
@@ -201,4 +201,12 @@ def Get_List(List_Path):
             return Show_List[int(inp) - 1]
     except:
         print("Failed to load the list")
+        return False
+
+
+# Move Files Into Correct Location
+def Move_Media(File_To_Move, New_Location):
+    try:
+        return True
+    except:
         return False

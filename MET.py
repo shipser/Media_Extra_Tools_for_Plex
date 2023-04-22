@@ -46,7 +46,8 @@ args = parser.parse_args()
 # Global Variables Defenition #
 ###############################
 
-Ver = "0.2.1"       # Release number
+# Release number - Major.Minor.Fix, where fix can be uncomplited feature update
+Ver = "0.2.1"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -141,10 +142,10 @@ def main():
                     # If dst set by external list use it, else if the user supplied new destination use it insted, if no new location don't move
                     if (dst != src):
                         Move_Media(New_Path, dst, MoT,
-                                   Season_Folder_Prefix, Seas)
+                                   Season_Folder_Prefix, Seas, src)
                     elif (args.Move != "Empty" and dst == src and args.Move != src):
                         Move_Media(New_Path, args.Move, MoT,
-                                   Season_Folder_Prefix, Seas)
+                                   Season_Folder_Prefix, Seas, src)
             # Meesege the user about renaming
             if (args.ReName and OneSM and not args.Move):
                 print("Media Renamed!")

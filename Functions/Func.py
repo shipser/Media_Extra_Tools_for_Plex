@@ -205,13 +205,34 @@ def Get_List(List_Path):
 
 
 # Move Files Into Correct Location
-def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum):
+def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum, BaseFolder):
     try:
-        # Check if the target is valid
-        if (os.path.isdir(New_Location)):
-            print("-->><<--")
+        # Check if the Source Exists, if not, exit
+        if (not os.path.isfile(File_To_Move)):
+            return False
+        # Add Season Folder to the new path
+        if (ToM == "TV" and (New_Location.upper().find(SeasPfx.upper()) == int("-1"))):
+            # If New Location Has / at the end dont att it, but add the rest
+            if (New_Location.endswith("/")):
+                New_Location = New_Location + SeasPfx + " " + SeasNum
+            else:  # Add Everything
+                New_Location = New_Location + "/" + SeasPfx + " " + SeasNum
+        # Check if the target exists, if not create it
+        if (not os.path.isdir(New_Location)):
+            os.makedirs(New_Location)
+        # Build The New Path With The Name Of The File
+        if (New_Location.endswith("/")):
+            New_Location = New_Location + re.split(r'/', File_To_Move)[-1]
         else:
-            print(New_Location)
+            New_Location = New_Location + "/" + \
+                re.split(r'/', File_To_Move)[-1]
+        # Check If File Exists in destination and move if not
+        if (not os.path.isfile(New_Location)):
+            os.rename(File_To_Move, New_Location)
+        else:  # Abort if alredy exists, and notify the user.
+            print("File '{}' Already Exists in the new location, File move aborted!".format(
+                re.split(r'/', File_To_Move)[-1]))
+        # Clean Up Emty Folder(s) up to the base (excluding)
         return True
     except:
         return False

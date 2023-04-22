@@ -137,7 +137,7 @@ def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
 
 
 # Move To New Location
-def Rename_TV_Movie(Org_File, New_Name, Org_Show_Name, Re_Name_Folder):
+def Rename_TV_Movie(Org_File, New_Name):
     try:
         # Build The New File Path
         New_Path = os.path.dirname(Org_File) + "/" + New_Name
@@ -205,8 +205,13 @@ def Get_List(List_Path):
 
 
 # Move Files Into Correct Location
-def Move_Media(File_To_Move, New_Location):
+def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum):
     try:
+        # Check if the target is valid
+        if (os.path.isdir(New_Location)):
+            print("-->><<--")
+        else:
+            print(New_Location)
         return True
     except:
         return False

@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.2-alpha"
+Ver = "0.4.3-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie

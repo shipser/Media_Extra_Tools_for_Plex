@@ -1,34 +1,34 @@
-# <u>Media Extra Tools for Plex</u>
+# Media Extra Tools for Plex
 
-## <u>**Extra tools to organeize media folders and files for Plex by Shay Pasvolsky**</u>
+## **Extra tools to organeize media folders and files for Plex by Shay Pasvolsky**
 
 Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 *Tested only with plex folder and file nameing scheme.*
 
-- ***Current Version: v0.4.3-alpha***
+- ***Current Version: v0.4.4-alpha***
 
-### <u>Features</u>
+### Features
 
 1. Organaize a folder containing one or more TV episodes or movies.
 2. Rename single TV Show (one or more episodes) or Movie to user supplied name or from external list.
 3. Move single TV Show (one or more episodes) or Movie to user supplied location or from external list.  
     a. Remove original folder after completeing a move.
 
-## <u>System Requirements (Based on tested systems, may work with different configurations)</u>
+## System Requirements (Based on tested systems, may work with different configurations)
 
-### <u>macOS</u>
+### macOS
 
 - Version: Monterey (12.6) and higher
 - python version: 3.9.7 and higher
 
-### <u>Ubuntu</u>
+### Ubuntu
 
 - Version: 20.04.6 and higher
 - python version: 3.8.10 and higher
 
-## <u>How To Use?</u>  
+## How To Use?  
   
-### <u>MET.py</u>
+### MET.py
 
 - Show Version:  
     `./MET.py -v`  
@@ -75,7 +75,7 @@ Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
     add `-c` or `-C` or `--CleanUp` after the Move command ***(before running the move command)***  
     - Example: `./Met.py -s '/media/TV/Andor1' -m -l '/media/TV/MediaList.list' -c`  
 
-### <u>External TV and Movie List Format</u>
+### External TV and Movie List Format
 
 Every TV show or Movie must be on a seperate line  
 

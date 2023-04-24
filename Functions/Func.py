@@ -70,7 +70,7 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
         # Try To Get The TV Show Or Movie Name
         if (FType == "TV"):
             TVMovie_Name = re.split(
-                r' -', (re.split(r'.S\d+E\d+', (re.split(r'/', File_Path)[-1]))[0]))[0]
+                r' -', (re.split(r'.S\d+E\d+', (re.split(r'/', File_Path)[-1]), flags=re.IGNORECASE)[0]))[0]
         elif (FType == "Movie"):
             # Build The Delimiter To Check
             Deli = MPfx.upper() + "|" + MPfx.lower() + "|" + \

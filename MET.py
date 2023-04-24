@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.0-alpha"
+Ver = "0.4.1-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -87,7 +87,7 @@ def main():
             # Organaize The Source Folder
             if (args.Organaize):
                 Org_TV_Movie(src, File_Sufix_Movies, File_Sufix_Subtitles,
-                             Lang_File_Sufix, Season_Folder_Prefix, False)
+                             Lang_File_Sufix, Season_Folder_Prefix)
             # Get the file list
             Files_In_Dir = Get_Files_In_Show_Folder(
                 src, File_Sufix_Movies, File_Sufix_Subtitles)
@@ -112,10 +112,15 @@ def main():
                     "External media list loaded, Media name selected:", NewName)
             else:  # Make Sure NewName Is Not Set If Not Needed
                 NewName = ""
+            # Deal with / missing in src and not dst Or Vise Versa
+            if (not src.endswith("/") and dst.endswith("/")):
+                src = src + "/"
+            elif (src.endswith("/") and not dst.endswith("/")):
+                src = src[:-1]
             # Run threw each file
             for f in Files_In_Dir:
                 # Get Season and Episde(s) for the file
-                Seas, Epi = Get_Season_Episode(f)
+                Seas, Epi = Get_Season_Episode(re.split(r'/', f)[-1])
                 # Check If There Is A Season And Decide If It Is A Movie Or TV
                 if (Seas == "Empty"):  # Movie
                     MoT = "Movie"  # Set Media Type For Futere Use
@@ -139,11 +144,8 @@ def main():
                     Rename_TV_Movie(f, ANew_Name)
                 # Move To Correct Location
                 if (args.Move and OneSM):
-                    # Deal with / missing in src and not dst
-                    if (not src.endswith("/") and dst.endswith("/")):
-                        src = src + "/"
                     # Make Sure args.Move Has a / at the end when src has it
-                    if (not args.Move.endswith("/") and src.endswith("/")):
+                    if (not args.Move.endswith("/") and src.endswith("/") and args.Move != "Empty"):
                         args.Move = args.Move + "/"
                     # If dst set by external list use it, else if the user supplied new destination use it insted, if no new location don't move
                     if (dst != src):
@@ -153,10 +155,10 @@ def main():
                         Move_Media(New_Path, args.Move, MoT,
                                    Season_Folder_Prefix, Seas)
             # Meesege the user about renaming
-            if (args.ReName and OneSM and not args.Move):
+            if (args.ReName and OneSM and (args.Move == "Empty" or (args.Move != "Empty" and dst == src))):
                 print("Media Renamed!")
             # Meesege the user about renaming and moveing
-            if (args.Move and OneSM):
+            if (args.Move and OneSM and args.Move != "Empty"):
                 print("Media Renamed and Moved!")
                 # Check if user requested to delete source folder and set the flag to true
                 if (args.CleanUp):

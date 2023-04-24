@@ -270,19 +270,16 @@ def Is_Dir_Empty(src):
 
 
 # Organize The SRC Folder
-def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx, RenameSRC=False):
+def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
     try:
         # Make Sure The Path Is A Directory
         if (os.path.isdir(src)):
             FDir = Get_Files_In_Show_Folder(
                 src, Msfx, Ssfx)  # Get the file list
-            # Check If Path Contains Only On TV Show Or One Movie
-            OneSM = Val_One_TV_Movie(FDir, Msfx, Ssfx, Lsfx)
-            # Check if only one TV Show or Movie is Present In The Source Directory
-            if (OneSM):
-                # Detect if Movie Or TV Show
+            # Loop threw all the files int the folder
+            for f in FDir:
                 # Get Season and Episode number for the first file
-                Seas, Epi = Get_Season_Episode(FDir[0])
+                Seas, Epi = Get_Season_Episode(re.split(r'/', f)[-1])
                 # Check If There Is A Season And Decide If It Is A Movie Or TV
                 if (Seas == "Empty"):  # Movie
                     MoT = "Movie"  # Set Media Type For Futere Use
@@ -290,32 +287,20 @@ def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx, RenameSRC=False):
                     MoT = "TV"  # Set Media Type For Futere Use
                 # Extract TV Show Or Movie Name From The File
                 TV_Movie_Name = Get_TV_Movie_Name(
-                    FDir[0], MoT, Msfx, Ssfx, Lsfx)
+                    f, MoT, Msfx, Ssfx, Lsfx)
                 # Make Sure Tha Path Ends With /
                 if (not src.endswith("/")):
                     src = src + "/"
+                # Build The Destination Path
                 # Check If The Source Folder Is Uniqe To The TV Show Or Movie, If Not Add The TV Show Or Movie Name To The New Path
                 if (src.lower().find(TV_Movie_Name.lower()) != int("-1")):
-                    Uni = True
                     dst = src
                 else:
-                    Uni = False
                     dst = src + TV_Movie_Name + "/"
-                # Loop threw all the files int the folder
-                for f in FDir:
-                    # Get Season and Episode number for the first file
-                    Seas, Epi = Get_Season_Episode(re.split(r'/', f)[-1])
-                    # Move The File To New Location
-                    Move_Media(f, dst, MoT, Spfx, Seas)
-                    # Clean Old Empty Folders
-                    CleanUp_SRC(src)
-                # Rename The Source Folder If The User Asked For It
-                # if (RenameSRC):
-                #os.rename(src, "")
-                return True
-            else:
-                print("Multi Show / Movie Source!")
-                return False
+                # Move The File To New Location
+                Move_Media(f, dst, MoT, Spfx, Seas)
+                # Clean Old Empty Folders
+                CleanUp_SRC(src)
         else:
             print("Source provided is not a directory!")
             return False

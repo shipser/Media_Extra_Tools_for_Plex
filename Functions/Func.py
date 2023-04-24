@@ -307,3 +307,18 @@ def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
     except:
         print("Failed to organize the source folder!!")
         return False
+
+
+# Check Source Directory Path Ends In / If Destination Is
+def Check_SRC_DST(src, dst):
+    try:
+        # Deal with / missing in src and not dst Or Vise Versa
+        if (not src.endswith("/") and dst.endswith("/")):
+            src_t = src + "/"  # Add / to src because dst has it and src doesn't
+        elif (src.endswith("/") and not dst.endswith("/")):
+            # Remove / from because dst doesn't have it and src has it
+            src_t = src[:-1]
+        return src_t
+    except:
+        # Return the origianl src if failed
+        return src

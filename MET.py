@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.1-alpha"
+Ver = "0.4.2-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -112,11 +112,8 @@ def main():
                     "External media list loaded, Media name selected:", NewName)
             else:  # Make Sure NewName Is Not Set If Not Needed
                 NewName = ""
-            # Deal with / missing in src and not dst Or Vise Versa
-            if (not src.endswith("/") and dst.endswith("/")):
-                src = src + "/"
-            elif (src.endswith("/") and not dst.endswith("/")):
-                src = src[:-1]
+            # Deal with / missing in src and not dst or Vise Versa
+            src = Check_SRC_DST(src, dst)
             # Run threw each file
             for f in Files_In_Dir:
                 # Get Season and Episde(s) for the file
@@ -163,7 +160,7 @@ def main():
                 # Check if user requested to delete source folder and set the flag to true
                 if (args.CleanUp):
                     rmsrc = True
-                else:  # If user did not rewuest to delete source folder, set the flage to false
+                else:  # If user did not request to delete source folder, set the flage to false
                     rmsrc = False
                 # Remove Empty Folders and tell the user it is done
                 if (CleanUp_SRC(src, rmsrc)):
@@ -171,6 +168,10 @@ def main():
                         print("Removed '{}' folder.".format(src))
                     else:
                         print("Removed empty folders inside '{}'".format(src))
+                else:
+                    print("Failed to delete empty folder(s)!")
+            # Messege the user about Finishing
+            print("Finished work!!")
         else:
             # Error on path not valid
             print("Not A Valid Folder, quiting!!!")

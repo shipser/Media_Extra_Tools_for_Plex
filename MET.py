@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.4-alpha"
+Ver = "0.4.5-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -106,7 +106,7 @@ def main():
                 # Overwrite the manual user input for the TV Show name
                 NewName = Selected_Show[0]
                 # Save the location to move the show at the end
-                dst = Selected_Show[1]
+                dst = Selected_Show[1] + Selected_Show[0] + "/"
                 # Meesege the user
                 print(
                     "External media list loaded, Media name selected:", NewName)
@@ -140,10 +140,11 @@ def main():
                 if ((args.ReName or args.Move) and OneSM):  # Rename If User Asked To
                     Rename_TV_Movie(f, ANew_Name)
                 # Move To Correct Location
-                if (args.Move and OneSM):
+                if ((args.Move == None or args.Move) and OneSM):
                     # Make Sure args.Move Has a / at the end when src has it
-                    if (not args.Move.endswith("/") and src.endswith("/") and args.Move != "Empty"):
-                        args.Move = args.Move + "/"
+                    if (args.Move != None):
+                        if (not args.Move.endswith("/") and src.endswith("/") and args.Move != "Empty"):
+                            args.Move = args.Move + "/"
                     # If dst set by external list use it, else if the user supplied new destination use it insted, if no new location don't move
                     if (dst != src):
                         Move_Media(New_Path, dst, MoT,
@@ -155,7 +156,7 @@ def main():
             if (args.ReName and OneSM and (args.Move == "Empty" or (args.Move != "Empty" and dst == src))):
                 print("Media Renamed!")
             # Meesege the user about renaming and moveing
-            if (args.Move and OneSM and args.Move != "Empty"):
+            if ((args.Move == None or args.Move) and OneSM and args.Move != "Empty"):
                 print("Media Renamed and Moved!")
                 # Check if user requested to delete source folder and set the flag to true
                 if (args.CleanUp):

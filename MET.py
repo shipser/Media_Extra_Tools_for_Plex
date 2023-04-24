@@ -26,22 +26,22 @@ import argparse                 # Imported for the arguments
 
 parser = argparse.ArgumentParser(description="******************************************************************************************\nText Place Holder\n******************************************************************************************",
                                  usage='%(prog)s [OPTIONS]', formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('-S', '-s', '--Source', required=True,
-                    help="Source directory of the TV Show or Movie. Required to operate!")
-parser.add_argument('-N', '-n', '--NewSName',
-                    help="New Name for the TV Show or Movie. Does not run if more then one TV Show or Movie if the path!")
-parser.add_argument('-R', '-r', '--ReName', action='store_true',
-                    help="Rename the TV show or Movie files.")
-parser.add_argument('-M', '-m', '--Move',
-                    help="Move the TV Show Episodes or Movie to the path provided.", nargs='?', default="Empty")
-parser.add_argument('-L', '-l', '--LoadList',
-                    help="Load external TV show list and select the correct one.")
-parser.add_argument('-V', '-v', '--Version', action='store_true',
-                    help="Show the version number.")
 parser.add_argument('-C', '-c', '--CleanUp', action='store_true',
                     help="Remove source folder after moveing the media files, will only work if not other files or folders left inside.")
-# parser.add_argument('-O', '-o', '--Organaize', action='store_true',
-#                    help="Organize the show - add a sub dir for Season (with number) and move the files inside, then rename based on the formating. make sure there are no subfolders inside!!")
+parser.add_argument('-L', '-l', '--LoadList',
+                    help="Load external TV show list and select the correct one.")
+parser.add_argument('-M', '-m', '--Move',
+                    help="Move the TV Show Episodes or Movie to the path provided.", nargs='?', default="Empty")
+parser.add_argument('-N', '-n', '--NewSName',
+                    help="New Name for the TV Show or Movie. Does not run if more then one TV Show or Movie if the path!")
+parser.add_argument('-O', '-o', '--Organaize', action='store_true',
+                    help="Organize the Source directory (not yet functional)!!")
+parser.add_argument('-R', '-r', '--ReName', action='store_true',
+                    help="Rename the TV show or Movie files.")
+parser.add_argument('-S', '-s', '--Source', required=True,
+                    help="Source directory of the TV Show or Movie. Required to operate!")
+parser.add_argument('-V', '-v', '--Version', action='store_true',
+                    help="Show the version number.")
 args = parser.parse_args()
 
 ###############################
@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.3.0"
+Ver = "0.4.0-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -84,6 +84,10 @@ def main():
             src = args.Source
             # Set Destination Folder
             dst = src
+            # Organaize The Source Folder
+            if (args.Organaize):
+                Org_TV_Movie(src, File_Sufix_Movies, File_Sufix_Subtitles,
+                             Lang_File_Sufix, Season_Folder_Prefix, False)
             # Get the file list
             Files_In_Dir = Get_Files_In_Show_Folder(
                 src, File_Sufix_Movies, File_Sufix_Subtitles)

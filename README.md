@@ -5,7 +5,7 @@
 Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 *Tested only with plex folder and file nameing scheme.*
 
-- ***Current Version: v0.4.5-alpha***
+- ***Current Version: v0.4.6-alpha***
 
 ### Features
 
@@ -80,6 +80,6 @@ Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 Every TV show or Movie must be on a seperate line  
 
 - Line structure:  
-    - `TV Show Name : Full path to the location to move to`  
+    - `TV Show Name : Full path to the location to move to (without the TV Show / Movie Folder Name)`  
 - Example:  
     - `Andor {tvdb-393189} : /media/TV/`  

@@ -43,6 +43,8 @@ def Get_Files_In_Show_Folder(Show_Path, MFileType, SubFileType):
 # Extract Season and Episode Numbers
 def Get_Season_Episode(File_Path):
     try:
+        # Make Sure To Use Only The File Name And Not The Full Path
+        File_Path = re.split(r'/', File_Path)[-1]
         # Get Season Number Without The S
         Seas = re.split(
             r'S', (re.search(r'S\d+', File_Path.upper()).group()), maxsplit=2)[1]
@@ -75,7 +77,9 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
             # Build The Delimiter To Check
             Deli = MPfx.upper() + "|" + MPfx.lower() + "|" + \
                 SPfx.upper() + "|" + SPfx.lower() + "|" + SLang.lower() + "|" + SLang.upper()
-            TVMovie_Name = re.split(Deli, re.split(r'/', File_Path)[-1])[0]
+            # Extract The TV Show Or Movie Name
+            TVMovie_Name = re.split(Deli, re.split(
+                r'/', File_Path)[-1], flags=re.IGNORECASE)[0]
         else:
             TVMovie_Name = "No_Name"
         return TVMovie_Name
@@ -88,6 +92,7 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
 # Build New Path To Arrange The File
 def Build_New_Name(File_Path, Season, Episode, ToM, NName, SLang, MPfx, SPfx):
     try:
+        # Get The Current File Directory
         New_Path = os.path.dirname(File_Path) + "/"
         # Check if TV Or Movie Title
         if (ToM == "TV"):
@@ -311,7 +316,18 @@ def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
 
 # Check Source Directory Path Ends In / If Destination Is
 def Check_SRC_DST(src, dst):
+    """
+    Check_SRC_DST checks src (source) and dst (destination) last charecter one againset each over and cheks if they both have /.
+    If source deosn't have / while dst has - it adds / to the end of src.
+    If src has but dst doesn't, it removes the / from src's end.
+
+    :param src: the source folder path.
+    :param dst: the destination folder path.
+    :return: The function returns fixed src after checking it.
+    """
     try:
+        # Set Starting point for non of the conditions met.
+        src_t = src
         # Deal with / missing in src and not dst Or Vise Versa
         if (not src.endswith("/") and dst.endswith("/")):
             src_t = src + "/"  # Add / to src because dst has it and src doesn't
@@ -321,4 +337,38 @@ def Check_SRC_DST(src, dst):
         return src_t
     except:
         # Return the origianl src if failed
+        return src
+
+
+# Build New Path
+def Build_New_Path(src, TV_Movie_Name):
+    """
+    Function to build new folder path containing the show name (only once).
+
+    :param src: the source folder path.
+    :param TV_Movie_Name: the TV Show / Movie name.
+    :return: returns new path with the TV Show / Movie name as the last folder, on any fail type, will return the original path.
+    """
+    try:
+        # Make Sure The Path Is A Directory
+        if (os.path.isdir(src)):
+            # Make Sure src Has A Trailing /
+            if (not src.endswith("/")):
+                src = src + "/"
+            # Make Sure The Media Name Provided
+            if (TV_Movie_Name != ""):
+                # Check To Make Sure That The Path doesn't have 'Media Name' named folder, and add it to the path
+                if (src.lower().find(TV_Movie_Name.lower()) == int("-1")):
+                    src_t = src + TV_Movie_Name + "/"
+                else:
+                    src_t = src
+                return src_t
+            else:
+                print("No show name provided!")
+                return src
+        else:
+            print("Fail, not a path!!!")
+            return src
+    except:
+        print("Failed to build a path!")
         return src

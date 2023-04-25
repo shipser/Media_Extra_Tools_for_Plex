@@ -23,8 +23,7 @@ import argparse                 # Imported for the arguments
 # Argument Parser Settings #
 ############################
 
-
-parser = argparse.ArgumentParser(description="******************************************************************************************\nText Place Holder\n******************************************************************************************",
+parser = argparse.ArgumentParser(description="******************************************************************************************\n\n  TV Show file renamer by Shay Pasvolsky (C).\n\n  The program acceptes only srt and mkv files!\n\n******************************************************************************************",
                                  usage='%(prog)s [OPTIONS]', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-C', '-c', '--CleanUp', action='store_true',
                     help="Remove source folder after moveing the media files, will only work if not other files or folders left inside.")
@@ -35,7 +34,7 @@ parser.add_argument('-M', '-m', '--Move',
 parser.add_argument('-N', '-n', '--NewSName',
                     help="New Name for the TV Show or Movie. Does not run if more then one TV Show or Movie if the path!")
 parser.add_argument('-O', '-o', '--Organaize', action='store_true',
-                    help="Organize the Source directory (not yet functional)!!")
+                    help="Organize the Source directory!!")
 parser.add_argument('-R', '-r', '--ReName', action='store_true',
                     help="Rename the TV show or Movie files.")
 parser.add_argument('-S', '-s', '--Source', required=True,
@@ -44,15 +43,17 @@ parser.add_argument('-V', '-v', '--Version', action='store_true',
                     help="Show the version number.")
 args = parser.parse_args()
 
+
 ###############################
 # Global Variables Defenition #
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.5-alpha"
+Ver = "0.4.6-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
+
 
 ###########################
 # Do Not Change From Here #
@@ -70,9 +71,9 @@ Season_Folder_Prefix = "Season"     # Season folder prefix before the season num
 # Start the Logic #
 ###################
 
-
 # Main function to run
 def main():
+    # Show The Version And Stop Running
     if (args.Version):
         Ver_String = "MET (Media Extra Tools for plex) Version: v" + Ver
         print(Ver_String)
@@ -106,7 +107,7 @@ def main():
                 # Overwrite the manual user input for the TV Show name
                 NewName = Selected_Show[0]
                 # Save the location to move the show at the end
-                dst = Selected_Show[1] + Selected_Show[0] + "/"
+                dst = Build_New_Path(Selected_Show[1], Selected_Show[0])
                 # Meesege the user
                 print(
                     "External media list loaded, Media name selected:", NewName)

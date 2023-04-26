@@ -5,7 +5,7 @@
 Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 *Tested only with plex folder and file nameing scheme.*
 
-- ***Current Version: v0.4.6-alpha***
+- ***Current Version: v0.4.7-alpha***
 
 ### Features
 
@@ -20,11 +20,15 @@ Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 
 - Version: Monterey (12.6) and higher
 - python version: 3.9.7 and higher
+- python libraries: (run pip3 install requirements.txt)
+    - inquirer
 
 ### Ubuntu
 
 - Version: 20.04.6 and higher
 - python version: 3.8.10 and higher
+- python libraries: (run pip3 install requirements.txt)
+    - inquirer
 
 ## How To Use?  
   

@@ -17,6 +17,7 @@
 
 import os           # Used to build the directory list, rename function
 import re           # For Regex Strings
+import inquirer     # Used in LoadListSelector
 
 #######################
 # Function Defenition #
@@ -270,12 +271,28 @@ def CleanUp_SRC(src, rmsrc=False):
 
 # Check If Dir Is Empty
 def Is_Dir_Empty(src):
+    """
+    Make sure the folder provided is empty
+
+    :param src: The path to check
+    :return: True if empty.
+    """
     with os.scandir(src) as scan:
         return next(scan, None) is None
 
 
 # Organize The SRC Folder
 def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
+    """
+    Organize the path provided, put every TV Show  or Movie to the correct folder inside the original path.
+
+    :param src: folder path to work on.
+    :param Msfx: Media file suffix (like .mkv), must have dot at the start.
+    :param Ssfx: Subtitle file suffix (like .srt), must have dot at the start.
+    :param Lsfx: Languge suffix for the subtitile name, mast have a dot at the start (like .heb).
+    :param Spfx: Season folder prefix (like Season).
+    :return: True on success, False on any fail.
+    """
     try:
         # Make Sure The Path Is A Directory
         if (os.path.isdir(src)):
@@ -306,6 +323,8 @@ def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
                 Move_Media(f, dst, MoT, Spfx, Seas)
                 # Clean Old Empty Folders
                 CleanUp_SRC(src)
+            # Return true if success.
+            return True
         else:
             print("Source provided is not a directory!")
             return False
@@ -320,6 +339,11 @@ def Check_SRC_DST(src, dst):
     Check_SRC_DST checks src (source) and dst (destination) last charecter one againset each over and cheks if they both have /.
     If source deosn't have / while dst has - it adds / to the end of src.
     If src has but dst doesn't, it removes the / from src's end.
+    examples:
+    1. src = path/, dst = path/ -> result = src = path/
+    2. src = path, dst = path -> result = src = path
+    3. src = path, dst = path/ -> result = src + / = path/
+    4. src = path/, dst = path -> result = src - / = path
 
     :param src: the source folder path.
     :param dst: the destination folder path.
@@ -372,3 +396,41 @@ def Build_New_Path(src, TV_Movie_Name):
     except:
         print("Failed to build a path!")
         return src
+
+
+def LoadListSelector(List_Path):
+    """
+    Load a list and prompt the user to select a TV Show Or Movie.
+
+    :param List_Path: path to the list file.
+    :return: an array of Show Name, Show folder parant path
+    """
+    try:
+        if (os.path.isfile(List_Path)):  # Make sure the file exists
+            with open(List_Path) as Lines:  # Read the file
+                # read the contets of the file and split into lines
+                Show_List_Unsplit = Lines.read().splitlines()
+            Show_List_Names = []  # Set a blank array for the show list
+            Show_List_Full = []  # Set a blank array for the show list
+            for L in Show_List_Unsplit:  # Loop threw the list lines
+                Show_List_Names.append(re.split(r' : ', L)[0])
+                Show_List_Full.append(re.split(r' : ', L))
+            ques = [inquirer.List(
+                'Show', message="Please select the TV show / Movie:", choices=Show_List_Names)]  # Built the question
+            ans = inquirer.prompt(ques)  # prompt the user
+            # Loop threw the list to find the index and full data coresponeding the user selection
+            for i in range(len(Show_List_Full)):
+                # Check if the current position is the user selection, if true go in.
+                if Show_List_Full[i][0] == ans['Show']:
+                    # Set the return value to the full data as an array.
+                    ret = Show_List_Full[i]
+                    break  # stop the loop
+            return ret  # return the full data
+        else:
+            # Did not get a file.
+            print("Not a Media list file!")
+            return []
+    except:
+        # Error Out
+        print("Failed to load list!")
+        return []

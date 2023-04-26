@@ -49,7 +49,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.6-alpha"
+Ver = "0.4.7-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -102,8 +102,11 @@ def main():
                 print("Only one TV Show or Movie Found, continueing!")
             # Check If External List Loaded and Use It (Make Sure Only  One TV Show Or Movie Present)
             if (args.LoadList != None and OneSM):
+                # Print line Space
+                print("")
                 # Get The Show list and selext one
-                Selected_Show = Get_List(args.LoadList)
+                # Selected_Show = Get_List(args.LoadList) # Old Style
+                Selected_Show = LoadListSelector(args.LoadList)
                 # Overwrite the manual user input for the TV Show name
                 NewName = Selected_Show[0]
                 # Save the location to move the show at the end

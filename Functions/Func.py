@@ -26,6 +26,18 @@ import inquirer     # Used in LoadListSelector
 
 # Get all the movie and subtitle files in a path
 def Get_Files_In_Show_Folder(Show_Path, MFileType, SubFileType):
+    """
+    Get all media file paths in the source folder.
+
+    depends on:
+        imports:
+            os
+
+    :param Show_Path: Media folder path to work on.
+    :param MFileType: Media file suffix (like .mkv), must have dot at the start.
+    :param SubFileType: Subtitle file suffix (like .srt), must have dot at the start.
+    :return: [File path array] if found at least one file, ["Empty"] if no files found, ["Error!!"] on any error.
+    """
     try:
         Show_Files = []  # Declare blank show file array
         # Get Files
@@ -43,6 +55,16 @@ def Get_Files_In_Show_Folder(Show_Path, MFileType, SubFileType):
 
 # Extract Season and Episode Numbers
 def Get_Season_Episode(File_Path):
+    """
+    Extract season number and episode number from a media file path.
+
+    depends on:
+        imports:
+            re
+
+    :param File_Path: Media file path to work on.
+    :return: returns a tuaple of [Season number, Episode number] if extracted, on any error returns a tuaple of ["Empty", "Empty"]
+    """
     try:
         # Make Sure To Use Only The File Name And Not The Full Path
         File_Path = re.split(r'/', File_Path)[-1]
@@ -69,6 +91,20 @@ def Get_Season_Episode(File_Path):
 
 # Extract TV Show Or Movie Name
 def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
+    """
+    Extract the Movie or TV Show Name from a path to a media file.
+
+    depends on:
+        imports:
+            re
+
+    :param File_Path: Media file path to work on.
+    :param FType: Media type, must be "TV" or "Movie".
+    :param MPfx: Media file suffix (like .mkv), must have dot at the start.
+    :param SPfx: Subtitle file suffix (like .srt), must have dot at the start.
+    :param SLang: Languge suffix for the subtitile name, mast have a dot at the start (like .heb).
+    :return: returns the Name of the TV Show series or Movie extracted if succeded, if not, returns an error string.
+    """
     try:
         # Try To Get The TV Show Or Movie Name
         if (FType == "TV"):
@@ -92,6 +128,24 @@ def Get_TV_Movie_Name(File_Path, FType, MPfx, SPfx, SLang):
 
 # Build New Path To Arrange The File
 def Build_New_Name(File_Path, Season, Episode, ToM, NName, SLang, MPfx, SPfx):
+    """
+    Build new file name and file path based on plex organization scheme.
+
+    depends on:
+        imports:
+            os
+            re
+
+    :param File_Path: File path to work on..
+    :param Season: Season number for TV Episode file.
+    :param Episode: Episode number for TV Episode file.
+    :param ToM: For TV Show File Set to "TV", For Movie file set to "Movie", everything else will give an error.
+    :param NName: New TV Show or Movie Name.
+    :param SLang: Languge suffix for the subtitile name, mast have a dot at the start (like .heb).
+    :param MPfx: Media file suffix (like .mkv), must have dot at the start.
+    :param SPfx: Subtitle file suffix (like .srt), must have dot at the start.
+    :return: On any undefind error return an array of ["Error!!!", "Error!!!"], on ToM Error return an array of ["Error!!", original folder path to the file], on success return an array of [New File Name, original folder path to the file]
+    """
     try:
         # Get The Current File Directory
         New_Path = os.path.dirname(File_Path) + "/"
@@ -129,6 +183,17 @@ def Build_New_Name(File_Path, Season, Episode, ToM, NName, SLang, MPfx, SPfx):
 
 # Validate New TV Or Movie Name
 def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
+    """
+    Check the new name is not enpty or None.
+
+    depends on:
+        Nothing
+
+    :param New_Name_User: TV Show or Movie name supplied by user input.
+    :param Old_Name: Original TV Show or Movie name.
+    :param New_Name_List: TV Show or Movie name supplied by the user selection from the list.
+    :return: The name from the list if available, if not then the user supplied name if available, else the original name.
+    """
     try:
         # Check if user supplied a new name, if yes, return it.
         if (New_Name_List != ""):
@@ -144,6 +209,17 @@ def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
 
 # Move To New Location
 def Rename_TV_Movie(Org_File, New_Name):
+    """
+    Rename a file.
+
+    depends on:
+        imports:
+            os
+
+    :param Org_File: File path to rename.
+    :param New_Name: New name for the file.
+    :return: True on success, False on any fail.
+    """
     try:
         # Build The New File Path
         New_Path = os.path.dirname(Org_File) + "/" + New_Name
@@ -156,6 +232,20 @@ def Rename_TV_Movie(Org_File, New_Name):
 
 # Check If Path Has More Then One TV Show And / Or Movie
 def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx, SLang):
+    """
+    Check if the path has only One TV Show or Movie in it (can be multiple files, jest have to belong to the same TV Show Or Movie).
+
+    depends on:
+        Functions:
+            Get_Season_Episode
+            Get_TV_Movie_Name
+
+    :param Files_In_Dir: Two dimantional array of files.
+    :param MPfx: Media file suffix (like .mkv), must have dot at the start.
+    :param SPfx: Subtitle file suffix (like .srt), must have dot at the start.
+    :param SLang: Languge suffix for the subtitile name, mast have a dot at the start (like .heb).
+    :return: True if all the files belong to one TV Show or Movie, False on any fail or if not.
+    """
     try:
         Count = 0  # Set blank counter
         # Detect If Movie
@@ -184,34 +274,23 @@ def Val_One_TV_Movie(Files_In_Dir, MPfx, SPfx, SLang):
         return False
 
 
-# Load And Select A List
-def Get_List(List_Path):
-    try:
-        if (os.path.isfile(List_Path)):  # Make sure the file exists
-            with open(List_Path) as Lines:  # Read the file
-                # read the contets of the file and split into lines
-                Show_List_Unsplit = Lines.read().splitlines()
-            Show_List = []  # Set a blank array for the show list
-            index = 1  # Number the lines, start with 1
-            MessegeToShow = ""
-            for L in Show_List_Unsplit:  # Loop threw the lines and split them to show name and conatining folder
-                Show_List.append(re.split(r' : ', L))
-                MessegeToShow = MessegeToShow + "\n" + str(index) + ") " + "Show name: " + re.split(r' : ', L)[
-                    0] + ", location: " + re.split(r' : ', L)[1]  # Build the Meesege for the user to select a show
-                index += 1
-            # Add the question for the user to the messege
-            MessegeToShow = MessegeToShow + "\n\nPlease Select a TV show number: "
-            # Request a selection from the user.
-            inp = input(MessegeToShow)
-            # Return the TV show data array
-            return Show_List[int(inp) - 1]
-    except:
-        print("Failed to load the list")
-        return False
-
-
 # Move Files Into Correct Location
 def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum):
+    """
+    Move Media file feo source to new location.
+
+    depends on:
+        imports:
+            os
+            re
+
+    :param File_To_Move: File path to move.
+    :param New_Location: Media folder to put the file in..
+    :param ToM: if equals to "TV" treat as an TV episode file, else as a movie file.
+    :param SeasPfx: Season folder prefix (like Season).
+    :param SeasNum: season number for the TV Episode file.
+    :return: True on success, False on any fail.
+    """
     try:
         # Check if the Source Exists, if not, exit
         if (not os.path.isfile(File_To_Move)):
@@ -245,6 +324,19 @@ def Move_Media(File_To_Move, New_Location, ToM, SeasPfx, SeasNum):
 
 # Remove Empty Folders
 def CleanUp_SRC(src, rmsrc=False):
+    """
+    Clean Up the source (src) folder by deleteing hidden files and removeing empty sub folders. if rmsrc is set to true, deletes the parent folder if empty.
+
+    depends on:
+        imports:
+            os
+            re
+        Functions:
+            Is_Dir_Empty
+
+    :param src: path of folder to clean up.
+    :return: True on success, False on fail.
+    """
     try:
         # Check Every Folder If Empty And Remove IT
         Files_In_Dir = [os.path.join(root, name) for root, dirs, files in os.walk(
@@ -274,6 +366,10 @@ def Is_Dir_Empty(src):
     """
     Make sure the folder provided is empty
 
+    depends on:
+        imports:
+            os
+
     :param src: The path to check
     :return: True if empty.
     """
@@ -285,6 +381,17 @@ def Is_Dir_Empty(src):
 def Org_TV_Movie(src, Msfx, Ssfx, Lsfx, Spfx):
     """
     Organize the path provided, put every TV Show  or Movie to the correct folder inside the original path.
+
+    depends on:
+        imports:
+            os
+            re
+        Functions:
+            Get_Files_In_Show_Folder
+            Get_Season_Episode
+            Get_TV_Movie_Name
+            Move_Media
+            CleanUp_SRC
 
     :param src: folder path to work on.
     :param Msfx: Media file suffix (like .mkv), must have dot at the start.
@@ -345,6 +452,9 @@ def Check_SRC_DST(src, dst):
     3. src = path, dst = path/ -> result = src + / = path/
     4. src = path/, dst = path -> result = src - / = path
 
+    depends on:
+        Nothing
+
     :param src: the source folder path.
     :param dst: the destination folder path.
     :return: The function returns fixed src after checking it.
@@ -368,6 +478,10 @@ def Check_SRC_DST(src, dst):
 def Build_New_Path(src, TV_Movie_Name):
     """
     Function to build new folder path containing the show name (only once).
+
+    depends on:
+        imports:
+            os
 
     :param src: the source folder path.
     :param TV_Movie_Name: the TV Show / Movie name.
@@ -402,6 +516,12 @@ def LoadListSelector(List_Path):
     """
     Load a list and prompt the user to select a TV Show Or Movie.
 
+    depends on:
+        imports:
+            os
+            inquirer
+            re
+
     :param List_Path: path to the list file.
     :return: an array of Show Name, Show folder parant path
     """
@@ -434,3 +554,23 @@ def LoadListSelector(List_Path):
         # Error Out
         print("Failed to load list!")
         return []
+
+
+# Set Flags
+def Set_Flags(CleanUP, LoadList, Move, NewSName, Organaize, ReName, Source):
+    """
+    Load a list and prompt the user to select a TV Show Or Movie.
+
+    depends on:
+        imports:
+            a
+        Functions:
+            a
+
+    :param one: what is it
+    :return: what it returns
+    """
+    try:
+        return True
+    except:
+        return False

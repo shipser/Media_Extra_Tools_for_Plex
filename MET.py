@@ -3,7 +3,6 @@
 ##########################################################
 ##########################################################
 ## Writen By: Shay Pasvolsky | Apr 21st, 2023           ##
-## Last Update: Apr 22st, 2023                          ##
 ## Email: spasvolski@gmail.com                          ##
 ## GitHub: https://github.com/shipser                   ##
 ## Gitlab: @shipser                                     ##
@@ -49,7 +48,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "0.4.7-alpha"
+Ver = "0.4.8-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -73,6 +72,9 @@ Season_Folder_Prefix = "Season"     # Season folder prefix before the season num
 
 # Main function to run
 def main():
+    # Set_Flags(args.CleanUp, args.LoadList, args.Move, args.NewSName,
+    #          args.Organaize, args.ReName, args.Source)
+    # return True
     # Show The Version And Stop Running
     if (args.Version):
         Ver_String = "MET (Media Extra Tools for plex) Version: v" + Ver
@@ -105,7 +107,6 @@ def main():
                 # Print line Space
                 print("")
                 # Get The Show list and selext one
-                # Selected_Show = Get_List(args.LoadList) # Old Style
                 Selected_Show = LoadListSelector(args.LoadList)
                 # Overwrite the manual user input for the TV Show name
                 NewName = Selected_Show[0]

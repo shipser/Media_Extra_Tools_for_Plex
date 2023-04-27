@@ -48,7 +48,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "1.0.0-RC1"
+Ver = "1.0.0-RC1-1"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -153,10 +153,10 @@ def main():
                             args.Move = args.Move + "/"
                     # If dst set by external list use it, else if the user supplied new destination use it insted, if no new location don't move
                     if (dst != src):
-                        Move_Media(New_Path, dst, MoT,
+                        Move_Media(New_Path, Build_New_Path(dst, ANew_Name), MoT,
                                    Season_Folder_Prefix, Seas)
                     elif (args.Move != "Empty" and dst == src and args.Move != src):
-                        Move_Media(New_Path, args.Move, MoT,
+                        Move_Media(New_Path, Build_New_Path(args.Move, ANew_Name), MoT,
                                    Season_Folder_Prefix, Seas)
             # Meesege the user about renaming
             if (args.ReName and OneSM and (args.Move == "Empty" or (args.Move != "Empty" and dst == src)) and not args.LoadList):

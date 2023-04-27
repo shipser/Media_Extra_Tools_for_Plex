@@ -144,7 +144,7 @@ def Build_New_Name(File_Path, Season, Episode, ToM, NName, SLang, MPfx, SPfx):
     :param SLang: Languge suffix for the subtitile name, mast have a dot at the start (like .heb).
     :param MPfx: Media file suffix (like .mkv), must have dot at the start.
     :param SPfx: Subtitle file suffix (like .srt), must have dot at the start.
-    :return: On any undefind error return an array of ["Error!!!", "Error!!!"], on ToM Error return an array of ["Error!!", original folder path to the file], on success return an array of [New File Name, original folder path to the file]
+    :return: On any undefind error return an array of ["Error!!!", "Error!!!"], on ToM Error return an array of ["Error!!", invalid path], on success return an array of [New File Name, new file path]
     """
     try:
         # Get The Current File Directory

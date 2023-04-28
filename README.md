@@ -5,7 +5,7 @@
 Tools to organaize media librery for Plex, Kodi, Jellyfin and Emby.
 *Tested only with plex folder and file nameing scheme.*
 
-- ***Current Version: v1.0.1-alpha***
+- ***Current Version: v1.0.1-RC2***
 
 ### Features
 

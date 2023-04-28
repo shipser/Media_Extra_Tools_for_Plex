@@ -196,7 +196,7 @@ def Val_New_Name(New_Name_User, Old_Name, New_Name_List):
     """
     try:
         # Check if user supplied a new name, if yes, return it.
-        if (New_Name_List != ""):
+        if (New_Name_List != "" and New_Name_List != None):
             return New_Name_List
         elif (New_Name_User != None):
             return New_Name_User
@@ -505,7 +505,7 @@ def Build_New_Path(src, TV_Movie_Name):
                 print("No show name provided!")
                 return src
         else:
-            print("Fail, not a path!!!")
+            print("Fail, not a path!!! ")
             return src
     except:
         print("Failed to build a path!")
@@ -556,21 +556,188 @@ def LoadListSelector(List_Path):
         return []
 
 
-# Set Flags
-def Set_Flags(CleanUP, LoadList, Move, NewSName, Organaize, ReName, Source):
+# Set Flags and Argumanrs
+def Set_Flags_Args(CleanUP, LoadList, Move, NewSName, Organaize, ReName, Source, MFsfx, MFSsfx, LFsfx, SFpfx):
     """
     Load a list and prompt the user to select a TV Show Or Movie.
 
     depends on:
         imports:
-            a
+            os
         Functions:
-            a
+            Val_SRC
+            Org_TV_Movie
+            Get_Files_In_Show_Folder
+            Val_One_TV_Movie
+            Val_List_File
+            LoadListSelector
+            Build_New_Path
+            Check_SRC_DST
 
-    :param one: what is it
-    :return: what it returns
+    :param CleanUP: True or Flase - Sets remove the main dir as part of the cleanup.
+    :param LoadList: None if not used, Path string to a list file if used.
+    :param Move: Move the files to new location, Empty if no, None if user did not provide manual path, Path if user provided
+    :param NewSName: User provided name to use as a new name for the media. None if not provided, string if provided
+    :param Organaize: True or False - if organaizeing is requested.
+    :param ReName: True or False - if renameing is requested.
+    :param Source: path string to folder of media files.
+    :return: returns an array of all the params
+    """
+    # Initialize all the flags
+    src = ""                # Path to source folder
+    RM_MasDir = False       # Delete user provided path - No by defalut
+    Use_List = False        # Use external list provided by user - No by default
+    List_Valid = False      # List provided by user is good - No by Default
+    List_Path = ""          # Empty string for the path to the list file
+    Move_Files = False      # Move the files to new location
+    Move_Path = ""          # The path to move the files
+    ReN = False             # Rename media - defaults to No
+    NewName = NewSName      # Place holder for the New name for the media
+    OneSM = False           # One TV Show or One Movie in the folder to work on, defaults to No
+    Files_In_Dir = []       # Setblank file array
+    Org = False             # Organaized, False by default
+    Answ = False            # Blank array to return
+    No_Cont = False         # Set to false until a fail
+
+    try:
+        # Check source folder is a path to a folder
+        if (os.path.isdir(Source)):
+            # Check if the source folder conatins media files
+            if (Val_SRC(Source, MFsfx, MFSsfx)):
+                # Set the src to the source media folder
+                src = Source
+            else:
+                # Not a media folder
+                No_Cont = True
+        else:
+            # Not a folder
+            No_Cont = True
+        # Organaize The Source Folder
+        if (Organaize and not No_Cont):
+            Org = Org_TV_Movie(src, MFsfx, MFSsfx, LFsfx, SFpfx)
+            No_Cont = True
+        # Make sure no stop condition
+        if (not No_Cont):
+            # Get the file list
+            Files_In_Dir = Get_Files_In_Show_Folder(src, MFsfx, MFSsfx)
+            # Check if only One TV Show Or Movie is inside the source folder
+            OneSM = Val_One_TV_Movie(
+                Files_In_Dir, MFsfx, MFSsfx, LFsfx)
+            # Set RM_MasDir to True if user whants to delete the main path as part of the cleanup
+            if (CleanUP):
+                RM_MasDir = True
+            # Check if external media list provided, and if it is a valid list
+            if (LoadList != None):
+                Use_List = True  # User provided a media list file path
+                # Validat the file, if valid set the List_Path to the path provided and it's validity to True
+                if (Val_List_File(LoadList)):
+                    List_Path = LoadList
+                    List_Valid = True
+                    # Print line Space
+                    print("")
+                    # Get The Show list and selext one
+                    Selected_Show = LoadListSelector(List_Path)
+                    # Overwrite the manual user input for the TV Show name
+                    NewName = Selected_Show[0]
+                    # check if user requested a move
+                    if (Move != "Empty" and OneSM):
+                        # Set the Move flag to true
+                        Move_Files = True
+                        # Save the location to move the show at the end
+                        Move_Path = Build_New_Path(
+                            Selected_Show[1], Selected_Show[0])
+            # Check if user requested a name change
+            if ((ReName or (Use_List and List_Valid))):
+                # Set Rename flag to true
+                ReN = True
+            # Check if files need to move and set params acordingly
+            if (Move != "Empty" and not (Use_List and List_Valid) and Move != None and NewName != ""):
+                # Set the Move flag to true
+                Move_Files = True
+                # Save the location to move the show at the end
+                Move_Path = Build_New_Path(Move, NewName)
+            # Deal with / missing in src and not dst or Vise Versa
+            src = Check_SRC_DST(src, Move_Path)
+        # Return the answer
+        Answ = True
+    except:
+        # Error out
+        Answ = False
+
+    # Return the results
+    return [Answ, src, Org, OneSM, RM_MasDir, Use_List, List_Valid, List_Path, ReN, NewName, Move_Files, Move_Path, Files_In_Dir]
+
+
+# Validate List File
+def Val_List_File(List_Path):
+    """
+    Validate if the path is a valid TV Show and / or Movie File
+
+    depends on:
+        imports:
+            os
+            re
+
+    :param List_Path: path to media list file to check
+    :return: True if a valid file, false in any other case
     """
     try:
-        return True
+        # Check if the path is for a file
+        if (os.path.isfile(List_Path)):
+            with open(List_Path) as Lines:  # Read the file
+                # read the contets of the file and split into lines
+                Show_List_Unsplit = Lines.read().splitlines()
+            Show_List_Names = []  # Set a blank array for the show list
+            Show_List_Pathes = []  # Set a blank array for the show list
+            for L in Show_List_Unsplit:  # Loop threw the list lines
+                # Build a list of media names
+                Show_List_Names.append(re.split(r' : ', L)[0])
+                # Build a list of media folder pathes
+                Show_List_Pathes.append(re.split(r' : ', L)[1])
+            # Check if ther is at list one TV Show or Movie on the list, with at list one path
+            if (len(Show_List_Names) > 0 and len(Show_List_Pathes) > 0):
+                # Valid media list file
+                return True
+            else:
+                # Not a valid media list file
+                return False
+        else:
+            # the path is not a file
+            return False
     except:
+        # Error out
+        return False
+
+
+# Validate source folder
+def Val_SRC(Source, MFsfx, MFSsfx):
+    """
+    Validate if the path is a valid TV Show and / or Movie folder
+
+    depends on:
+        imports:
+            os
+        functions:
+            Get_Files_In_Show_Folder
+
+    :param Source: path to media list folder to check
+    :param MFsfx: suffix of media files to check for
+    :param MFSsfx: suffix of subtitle files to check for
+    :return: True if a valid path with at least one media file, false in any other case
+    """
+    try:
+        # Check if the path is a directory
+        if (os.path.isdir(Source)):
+            # Check ther are sutiable media files in the directory
+            if (Get_Files_In_Show_Folder(Source, MFsfx, MFSsfx)[0] != "Empty"):
+                # Source path is valid
+                return True
+            else:
+                # Not a media folder
+                return False
+        else:
+            # Not a directory
+            return False
+    except:
+        # Error out
         return False

@@ -48,7 +48,7 @@ args = parser.parse_args()
 ###############################
 
 # Release number - Major.Minor.Fix, where fix can be uncomplited feature update
-Ver = "1.0.0-RC1-1"
+Ver = "1.0.1-alpha"
 src = ""            # Place Holder For Source Folder
 dst = ""            # Place Holder For Destination Folder
 NewName = ""        # Place Holder For New TV Show Or Movie
@@ -72,9 +72,6 @@ Season_Folder_Prefix = "Season"     # Season folder prefix before the season num
 
 # Main function to run
 def main():
-    # Set_Flags(args.CleanUp, args.LoadList, args.Move, args.NewSName,
-    #          args.Organaize, args.ReName, args.Source)
-    # return True
     # Show The Version And Stop Running
     if (args.Version):
         Ver_String = "MET (Media Extra Tools for plex) Version: v" + Ver
@@ -186,6 +183,104 @@ def main():
         print("UnKnown Error!!!!")
 
 
+# New main loop
+def main_New():
+    # Set Falgs For The Jobs
+    Run_The_Prog, src, Org, OneSM, RM_MasDir, Use_List, List_Valid, List_Path, ReN, NewNameUser, Move_Files, Move_Path, Files_In_Dir = Set_Flags_Args(
+        args.CleanUp, args.LoadList, args.Move, args.NewSName, args.Organaize, args.ReName, args.Source, File_Sufix_Movies, File_Sufix_Subtitles, Lang_File_Sufix, Season_Folder_Prefix)
+    # Show The Version And Stop Running
+    if (args.Version):
+        Ver_String = "MET (Media Extra Tools for plex) Version: v" + Ver
+        print(Ver_String)
+        return True
+    # Check if continue running
+    if (Run_The_Prog and src != ""):
+        # Make sure media files found
+        if (Files_In_Dir != "Empty" and Files_In_Dir != "Error!!"):
+            # Messege the user about finding files
+            print("Found media files. loading the pathes to the program!")
+            # Messege the user about organazing
+            if (Org):
+                print("Finished organaizing!")
+            # Meesege the user ther is only one TV Show or Movie
+            if (OneSM):
+                print("Only one TV Show or Movie Found, continueing!")
+                # Run threw each file
+                for f in Files_In_Dir:
+                    # Get Season and Episde(s) for the file
+                    Seas, Epi = Get_Season_Episode(re.split(r'/', f)[-1])
+                    # Check If There Is A Season And Decide If It Is A Movie Or TV
+                    if (Seas == "Empty"):  # Movie
+                        MoT = "Movie"  # Set Media Type For Futere Use
+                        TVMName = Get_TV_Movie_Name(
+                            f, MoT, File_Sufix_Movies, File_Sufix_Subtitles, Lang_File_Sufix)  # Get TV Or Movie Name
+                        # If user supplied new name for the show or movie, Use it.
+                        NewName = Val_New_Name(NewNameUser, TVMName, NewName)
+                        # Get The Correct New Name And Path
+                        New_Name_Gen, New_Path = Build_New_Name(
+                            f, "", "", MoT, NewName, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
+                    else:  # TV Show
+                        MoT = "TV"  # Set Media Type For Futere Use
+                        TVMName = Get_TV_Movie_Name(
+                            f, MoT, File_Sufix_Movies, File_Sufix_Subtitles, Lang_File_Sufix)  # Get TV Or Movie Name
+                        # If user supplied new name for the show or movie, Use it.
+                        NewName = Val_New_Name(
+                            NewNameUser, TVMName, NewNameUser)
+                        # Get The Correct New Name And Path
+                        New_Name_Gen, New_Path = Build_New_Name(
+                            f, Seas, Epi, MoT, NewName, Lang_File_Sufix, File_Sufix_Movies, File_Sufix_Subtitles)
+                    # Rename If User Asked To
+                    if (ReN):
+                        Rename_TV_Movie(f, New_Name_Gen)
+                    # Move To Correct Location
+                    if (Move_Files):
+                        # If did not renam the file use the new path to the file
+                        if (not ReN):
+                            New_Path = f
+                        # Move the file
+                        Move_Media(New_Path, Build_New_Path(Move_Path, NewName), MoT,
+                                   Season_Folder_Prefix, Seas)
+                # Meesege the user about renaming
+                if (ReN):
+                    print("Media Renamed!")
+                # Meesege the user about renaming and moveing
+                if (Move_Files):
+                    print("Media Moved!")
+                    # Check if user requested to delete source folder and set the flag to true
+                    if (RM_MasDir):
+                        rmsrc = True
+                    else:  # If user did not request to delete source folder, set the flage to false
+                        rmsrc = False
+                    # Remove Empty Folders and tell the user it is done
+                    if (CleanUp_SRC(src, rmsrc)):
+                        if (rmsrc):
+                            print("Removed '{}' folder.".format(src))
+                        else:
+                            print("Removed empty folders inside '{}'".format(src))
+                    else:
+                        print("Failed to delete empty folder(s)!")
+                # Messege the user about Finishing
+                print("Finished all jobs!!")
+                # Finish and exit
+                return True
+            else:
+                #print("Use list: ", Use_List)
+                #print("List is valid: ", List_Valid)
+                #print("List path: ", List_Path)
+                # Multi Show or Movies found
+                print(
+                    "No more jobs to do, Finished what is enabled for multi show media folder!")
+                return False
+        else:
+            # No media files found in the path
+            print("No media files found!!")
+            return False
+    else:
+        # Error out
+        print("Somthing went wrong!!!")
+        return False
+
+
 # Make sure to run only if called directly
 if __name__ == "__main__":
-    main()
+    main_New()
